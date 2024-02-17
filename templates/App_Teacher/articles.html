@@ -210,6 +210,7 @@ ABS E-Learning {% endblock %} {% block body_block %}
                 </div>
               </div>
               {%endfor%}
+              <hr style="background: white;">
               <form method="POST" class="mt-2">
                 {% csrf_token %} {{replayForm|crispy}}
                 <input type="hidden" name="article_id" value="{{article.pk}}" />
@@ -219,6 +220,7 @@ ABS E-Learning {% endblock %} {% block body_block %}
             </div>
           </div>
           {%endfor%}
+          <hr style="background: white;">
           <form method="POST">
             {% csrf_token %} {{commentForm|crispy}}
             <input type="hidden" name="article_id" value="{{article.pk}}" />

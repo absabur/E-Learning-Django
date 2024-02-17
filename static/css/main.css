@@ -9,6 +9,7 @@ body {
     center;
   min-height: 100vh;
   color: white;
+  
 }
 .messages{
   position: absolute;

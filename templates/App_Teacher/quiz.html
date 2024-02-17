@@ -7,8 +7,16 @@ Quiz {% endblock %} {% block body_block %}
     {%csrf_token%}
     <button name="post_article" type="submit" class="btn btn-primary w-100">Post</button>
   </form>
+{%else%}
+<div style="w-100 ;display: flex; align-items: center; justify-content: center; flex-direction: column;">
+  <h5>Rules</h5>
+  <ul>
+    <li>You can submit answer of a quiz only one time.</li>
+    <li>You must submit the answer before last time.</li>
+  </ul>
+</div>
 {%endif%}
-<h1 class="text-center mt-3" style="text-decoration: underline;">Quizzes</h1>
+<h1 class="text-center m-3" style="text-decoration: underline;">Quizzes</h1>
 {%if quizzes|length == 0%}<h4 class='text-center mt-4' style="opacity: 0.6;">No Quiz To Show</h4>{%endif%}
 
 {%for quiz in quizzes%}

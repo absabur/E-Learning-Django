@@ -115,6 +115,14 @@ def quiz(request):
                 data = answerForm.save(commit=False)
                 quiz = int(request.POST.get('quiz_id'))
                 quiz = Quiz.objects.get(pk=quiz)
+                already_answer = AnswerList.objects.filter(quiz=quiz, user=request.user)
+                if already_answer:
+                    messages.warning(request, "Answer Already Submitted")
+                    return redirect('App_Teacher:quiz')
+                date_time_end = datetime.strptime(str(quiz.end_on), '%Y-%m-%d %H:%M:%S%z')
+                if date_time_end < timezone.now():
+                    messages.warning(request, "Time is up!")
+                    return redirect('App_Teacher:quiz')
                 data.user = request.user
                 data.quiz = quiz
                 data.save()

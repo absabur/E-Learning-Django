@@ -59,7 +59,6 @@ QNA {% endblock %} {% block body_block %}
   {%endif%}
     <div type="button" class="btn btn-info ml-auto" 
     onclick="showAnswers(this)" >Answers</div>
-  <!-- Modal -->
   <div class="w-100 answers" style="display: none;">
     <button
     type="button"
@@ -90,43 +89,43 @@ QNA {% endblock %} {% block body_block %}
             </div>
         </div>
         </div>
-        <div class="comment">
-        <div class="comment-user">
-            <img class="article-profile-image" src="/media/{{answer.user.user_profile.image}}" />
-            <div class="article-user-details w-100">
-            <div class='w-100 d-flex'>
-                <h5>{{answer.user.user_profile.name}} {%if answer.user.user_profile.role == 'teacher'%}<span class="text-info"><span class="text-info">( Teacher )</span></span>{%endif%}</h5>
-                {%if user == answer.user%}
-                <div class="post-menu" style="justify-self: flex-end;">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-                <div class="com-rep-menu" style="right: 2px;">
-                    <a class="btn btn-sm btn-warning w-100 m-1" href="{%url 'App_Student:answer_edit' pk=answer.pk%}">Edit answer</a>
-                    <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-danger btn-sm w-100 m-1" data-toggle="modal" data-target="#deleteanswer{{answer.id}}">
-                    Delete answer
-                    </button>
-                </div>
-                </div>
-                {%endif%}
-            </div>
-            <div class="short-post" onclick="maximizePost(this)">
-                {{answer.content|linebreaks|slice:80}}
-                {%if answer.content|length >= 80%}.....{%endif%}
-            </div>
-            <div class="full-post" onclick="minimizePost(this)" style="display: none;">{{answer.content|linebreaks}}</div>
-            {%if answer.content|length >= 80%}
-            <div class="d-flex w-100 mb-2">
-                <span class="ml-auto text-info see-more-btn" onclick="postFullShort(this)">See More...</span>
-            </div>
-            {%endif%}
-            </div>
-        </div>
-        </div>
+          <div class="comment-user">
+              <img class="article-profile-image" src="/media/{{answer.user.user_profile.image}}" />
+              <div class="article-user-details w-100">
+              <div class='w-100 d-flex'>
+                  <h5>{{answer.user.user_profile.name}} {%if answer.user.user_profile.role == 'teacher'%}<span class="text-info"><span class="text-info">( Teacher )</span></span>{%endif%}</h5>
+                  {%if user == answer.user%}
+                  <div class="post-menu" style="justify-self: flex-end;">
+                  <i class="fa-solid fa-ellipsis-vertical"></i>
+                  <div class="com-rep-menu" style="right: 2px;">
+                      <a class="btn btn-sm btn-warning w-100 m-1" href="{%url 'App_Student:answer_edit' pk=answer.pk%}">Edit answer</a>
+                      <!-- Button trigger modal -->
+                      <button type="button" class="btn btn-danger btn-sm w-100 m-1" data-toggle="modal" data-target="#deleteanswer{{answer.id}}">
+                      Delete answer
+                      </button>
+                  </div>
+                  </div>
+                  {%endif%}
+              </div>
+              <div class="short-post" onclick="maximizePost(this)">
+                  {{answer.content|linebreaks|slice:80}}
+                  {%if answer.content|length >= 80%}.....{%endif%}
+              </div>
+              <div class="full-post" onclick="minimizePost(this)" style="display: none;">{{answer.content|linebreaks}}</div>
+              {%if answer.content|length >= 80%}
+              <div class="d-flex w-100 mb-2">
+                  <span class="ml-auto text-info see-more-btn" onclick="postFullShort(this)">See More...</span>
+              </div>
+              {%endif%}
+              </div>
+          </div>
+
         {%endfor%}
+        <hr style="background: white;">
         <form method="POST" class="mt-2">
         {% csrf_token %} {{answerForm|crispy}}
         <input type="hidden" name="question_id" value="{{question.pk}}" />
-        <input type="submit" value="Answer" class="btn btn-info w-100 mt-2" />
+        <input type="submit" value="Answer" class="btn btn-info w-100" />
         </form>
     </div>
   </div>
