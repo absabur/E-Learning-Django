@@ -1,0 +1,232 @@
+{% extends "base.html" %} {% load crispy_forms_tags %} {% block title_block %}
+Articles {% endblock %} {% block body_block %}
+{%if user.user_profile.role == 'teacher'%}
+  <h3 class="text-center">Write A Article</h3>
+  <form class="write-article" method="POST" enctype="multipart/form-data">
+    {{postForm|crispy }}
+    <label class="image-upload" for="id_image" ><i class="fa-solid fa-image fa-2x"></i></label>
+    {%csrf_token%}
+    <button name="post_article" type="submit" class="btn btn-primary post-btn">Post</button>
+  </form>
+{%endif%}
+<h1 class="text-center mt-3" style="text-decoration: underline;">Articles</h1>
+{%if articles|length == 0%}<h4 class='text-center mt-4' style="opacity: 0.6;">No Articles To Show</h4>{%endif%}
+{%for article in articles%}
+<!-- Modal -->
+<div class="modal fade" id="delete{{article.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-dark" id="exampleModalLabel">Are You Sure To Delete This Article?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <a type="button" class="btn btn-danger" href="{%url 'App_Teacher:delete_aritcle' pk=article.pk%}">Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="article">
+  <div class="article-user">
+    <img class="article-profile-image" src="/media/{{article.user.user_profile.image}}" />
+    <div class="article-user-details">
+      <h5>{{article.user.user_profile.name}} {%if article.user.user_profile.role == 'teacher'%}<span class="text-info">( Teacher )</span>{%endif%}</h5>
+      <p>Post on: {{article.created_at}}</p>
+    </div>
+    {%if user == article.user%}
+    <div class="post-menu">
+      <i class="fa-solid fa-ellipsis-vertical fa-2x"></i>
+      <div class="menus">
+        <a class="btn btn-sm btn-warning w-100 m-1" href="{%url 'App_Teacher:artcle_write' pk=article.pk%}">Edit Post</a>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-danger btn-sm w-100 m-1" data-toggle="modal" data-target="#delete{{article.id}}">
+          Delete Post
+        </button>
+      </div>
+    </div>
+    {%endif%}
+  </div>
+  <h4 style="align-self: center;">{{article.title}}</h4>
+  <div class="short-post" onclick="maximizePost(this)">
+    {{article.content|linebreaks|slice:200}}
+    {%if article.content|length >= 200%}.....{%endif%}
+  </div>
+  <div class="full-post" onclick="minimizePost(this)" style="display: none;">{{article.content|linebreaks}}</div>
+  {%if article.content|length >= 200%}
+  <div class="d-flex w-100 mb-2">
+    <span class="ml-auto see-more-btn" onclick="postFullShort(this)">See More...</span>
+  </div>
+  {%endif%}
+  {%if article.image%}
+  <div class="article-image">
+    <img src="/media/{{article.image}}" />
+  </div>
+  {%endif%}
+  <div class="like-comment-bar">
+    <div>{{article.likes.all.count}}<a href="{%url 'App_Teacher:liked_article' pk=article.pk%}" class="ml-2 btn-like-comment is-liked">
+      {%for like in article.likes.all%}
+      {%if like.user == user%}
+      <i class="fa-solid fa-heart"></i>
+      {%endif%}
+      {%endfor%}
+    </a></div>
+    <span
+      type="button"
+      class="btn-like-comment"
+      data-toggle="modal"
+      data-target="#article{{article.id}}"
+    >
+      Comment
+    </span>
+  </div>
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="article{{article.id}}"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header bg-dark">
+          <h5 class="modal-title" id="exampleModalLabel">
+            Comments<span class="count">{{article.comments.all.count}}</span>
+          </h5>
+          <button
+            type="button"
+            class="close text-light"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body bg-dark">
+          {%for comment in article.comments.all%}
+          <div class="modal fade" id="deletecomment{{comment.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title text-dark" id="exampleModalLabel">Are You Sure To Delete This Comment?</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <a type="button" class="btn btn-danger" href="{%url 'App_Teacher:comment_delete' pk=comment.pk%}">Delete</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="comment-user">
+              <img class="article-profile-image" src="/media/{{comment.user.user_profile.image}}" />
+              <div class="article-user-details w-100">
+                <div class='w-100 d-flex'>
+                  <h5>{{comment.user.user_profile.name}} {%if comment.user.user_profile.role == 'teacher'%}<span class="text-info">( Teacher )</span>{%endif%}</h5>
+                  {%if user == comment.user%}
+                  <div class="post-menu" style="justify-self: flex-end;">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                    <div class="com-rep-menu" style="right: 2px;">
+                      <a class="btn btn-sm btn-warning w-100 m-1" href="{%url 'App_Teacher:comment_edit' pk=comment.pk%}">Edit Comment</a>
+                      <!-- Button trigger modal -->
+                      <button type="button" class="btn btn-danger btn-sm w-100 m-1" data-toggle="modal" data-target="#deletecomment{{comment.id}}">
+                        Delete Comment
+                      </button>
+                    </div>
+                  </div>
+                  {%endif%}
+                </div>
+                <div class="short-post" onclick="maximizePost(this)">
+                  {{comment.content|linebreaks|slice:80}}
+                  {%if comment.content|length >= 80%}.....{%endif%}
+                </div>
+                <div class="full-post" onclick="minimizePost(this)" style="display: none;">{{comment.content|linebreaks}}</div>
+                {%if comment.content|length >= 80%}
+                <div class="d-flex w-100 mb-2">
+                  <span class="ml-auto text-info see-more-btn" onclick="postFullShort(this)">See More...</span>
+                </div>
+                {%endif%}
+              </div>
+            </div>
+            <div style="display: flex; width: 100%;">
+              <span class="ml-auto mr-2" style="cursor: pointer; color: tomato;" onclick="showTextarea(this)">
+                Reply
+              </span>
+              <span style="opacity: 0.6;">{{comment.replies.all|length}}</span>
+            </div>
+            <div class="pl-4 w-100" style="display: none;">
+              {%for replay in comment.replies.all%}
+              <div class="modal fade" id="deletereply{{replay.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title text-dark" id="exampleModalLabel">Are You Sure To Delete This Reply?</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <a type="button" class="btn btn-danger" href="{%url 'App_Teacher:reply_delete' pk=replay.pk%}">Delete</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="comment-user">
+                <img class="comment-profile-image" src="/media/{{replay.user.user_profile.image}}" />
+                <div class="article-user-details w-100">
+                  <div class='w-100 d-flex'>
+                    <h6>{{replay.user.user_profile.name}} {%if replay.user.user_profile.role == 'teacher'%}<span class="text-info">( Teacher )</span>{%endif%}</h6>
+                    {%if user == replay.user%}
+                    <div class="post-menu" style="justify-self: flex-end;">
+                      <i class="fa-solid fa-ellipsis-vertical"></i>
+                      <div class="com-rep-menu" style="right: 2px;">
+                        <a class="btn btn-sm btn-warning w-100 m-1" href="{%url 'App_Teacher:reply_edit' pk=replay.pk%}">Edit Reply</a>
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-danger btn-sm w-100 m-1" data-toggle="modal" data-target="#deletereply{{replay.id}}">
+                          Delete Reply
+                        </button>
+                      </div>
+                    </div>
+                    {%endif%}
+                  </div>
+                  <div class="short-post" onclick="maximizePost(this)">
+                    {{replay.replay|linebreaks|slice:80}}
+                    {%if replay.replay|length >= 80%}.....{%endif%}
+                  </div>
+                  <div class="full-post" onclick="minimizePost(this)" style="display: none;">{{replay.replay|linebreaks}}</div>
+                  {%if replay.replay|length >= 80%}
+                  <div class="d-flex w-100 mb-2">
+                    <span class="ml-auto text-info see-more-btn" onclick="postFullShort(this)">See More...</span>
+                  </div>
+                  {%endif%}
+                </div>
+              </div>
+              {%endfor%}
+              <form method="POST" class="mt-2">
+                {% csrf_token %} {{replayForm|crispy}}
+                <input type="hidden" name="article_id" value="{{article.pk}}" />
+                <input type="hidden" name="comment_id" value="{{comment.pk}}" />
+                <input type="submit" value="Reply" class="btn btn-secondary w-100" />
+              </form>
+            </div>
+          </div>
+          {%endfor%}
+          <form method="POST">
+            {% csrf_token %} {{commentForm|crispy}}
+            <input type="hidden" name="article_id" value="{{article.pk}}" />
+            <input type="submit" value="Comment" class="btn btn-info w-100" />
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%endfor%} {% endblock %}

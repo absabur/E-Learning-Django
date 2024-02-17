@@ -1,0 +1,134 @@
+{% extends "base.html" %} {% load crispy_forms_tags %} {% block title_block %}
+QNA {% endblock %} {% block body_block %}
+<h3 class="text-center">Ask a question</h3>
+<form class="write-article" method="POST">
+  {{questionForm|crispy }}
+  {%csrf_token%}
+  <button name="post_question" type="submit" class="btn btn-primary post-btn">Ask</button>
+</form>
+<h1 class="text-center mt-3" style="text-decoration: underline;">Questions</h1>
+{%if questions|length == 0%}<h4 class='text-center mt-4' style="opacity: 0.6;">No Questions To Show</h4>{%endif%}
+{%for question in questions%}
+<!-- Modal -->
+<div class="modal fade" id="delete{{question.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-dark" id="exampleModalLabel">Are You Sure To Delete This Question?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <a type="button" class="btn btn-danger" href="{%url 'App_Student:question_delete' pk=question.pk%}">Delete</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="article">
+  <div class="article-user">
+    <img class="article-profile-image" src="/media/{{question.user.user_profile.image}}" />
+    <div class="article-user-details">
+      <h5>{{question.user.user_profile.name}} {%if question.user.user_profile.role == 'teacher'%}<span class="text-info"><span class="text-info">( Teacher )</span></span>{%endif%}</h5>
+      <p>Post on: {{question.created_at}}</p>
+    </div>
+    {%if user == question.user%}
+    <div class="post-menu">
+      <i class="fa-solid fa-ellipsis-vertical fa-2x"></i>
+      <div class="menus">
+        <a class="btn btn-sm btn-warning w-100 m-1" href="{%url 'App_Student:question_edit' pk=question.pk%}">Edit</a>
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-danger btn-sm w-100 m-1" data-toggle="modal" data-target="#delete{{question.id}}">
+          Delete
+        </button>
+      </div>
+    </div>
+    {%endif%}
+  </div>
+  <h4 style="align-self: center;">{{question.title}}</h4>
+  <div class="short-post" onclick="maximizePost(this)">
+    {{question.content|linebreaks|slice:200}}
+    {%if question.content|length >= 200%}.....{%endif%}
+  </div>
+  <div class="full-post" onclick="minimizePost(this)" style="display: none;">{{question.content|linebreaks}}</div>
+  {%if question.content|length >= 200%}
+  <div class="d-flex w-100 mb-2">
+    <span class="ml-auto see-more-btn" onclick="postFullShort(this)">See More...</span>
+  </div>
+  {%endif%}
+    <div type="button" class="btn btn-info ml-auto" 
+    onclick="showAnswers(this)" >Answers</div>
+  <!-- Modal -->
+  <div class="w-100 answers" style="display: none;">
+    <button
+    type="button"
+    class="close text-light"
+    data-dismiss="modal"
+    aria-label="Close"
+    >
+    <span aria-hidden="true">&times;</span>
+    </button>
+    <div class="modal-body bg-dark">
+        <h5 class="modal-title" id="exampleModalLabel">
+        Answers<span class="count">{{question.answers.all.count}}</span>
+        </h5>
+        {%for answer in question.answers.all%}
+        <div class="modal fade" id="deleteanswer{{answer.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-dark" id="exampleModalLabel">Are You Sure To Delete This Answer?</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <a type="button" class="btn btn-danger" href="{%url 'App_Student:answer_delete' pk=answer.pk%}">Delete</a>
+            </div>
+            </div>
+        </div>
+        </div>
+        <div class="comment">
+        <div class="comment-user">
+            <img class="article-profile-image" src="/media/{{answer.user.user_profile.image}}" />
+            <div class="article-user-details w-100">
+            <div class='w-100 d-flex'>
+                <h5>{{answer.user.user_profile.name}} {%if answer.user.user_profile.role == 'teacher'%}<span class="text-info"><span class="text-info">( Teacher )</span></span>{%endif%}</h5>
+                {%if user == answer.user%}
+                <div class="post-menu" style="justify-self: flex-end;">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+                <div class="com-rep-menu" style="right: 2px;">
+                    <a class="btn btn-sm btn-warning w-100 m-1" href="{%url 'App_Student:answer_edit' pk=answer.pk%}">Edit answer</a>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-danger btn-sm w-100 m-1" data-toggle="modal" data-target="#deleteanswer{{answer.id}}">
+                    Delete answer
+                    </button>
+                </div>
+                </div>
+                {%endif%}
+            </div>
+            <div class="short-post" onclick="maximizePost(this)">
+                {{answer.content|linebreaks|slice:80}}
+                {%if answer.content|length >= 80%}.....{%endif%}
+            </div>
+            <div class="full-post" onclick="minimizePost(this)" style="display: none;">{{answer.content|linebreaks}}</div>
+            {%if answer.content|length >= 80%}
+            <div class="d-flex w-100 mb-2">
+                <span class="ml-auto text-info see-more-btn" onclick="postFullShort(this)">See More...</span>
+            </div>
+            {%endif%}
+            </div>
+        </div>
+        </div>
+        {%endfor%}
+        <form method="POST" class="mt-2">
+        {% csrf_token %} {{answerForm|crispy}}
+        <input type="hidden" name="question_id" value="{{question.pk}}" />
+        <input type="submit" value="Answer" class="btn btn-info w-100 mt-2" />
+        </form>
+    </div>
+  </div>
+</div>
+{%endfor%} {% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %} {% load crispy_forms_tags %} {% block title_block %}
+QNA {% endblock %}
+{% block body_block %}
+<h1 class="text-center">Quiz Results</h1>
+{%if lists|length == 0%}<h4 class='text-center mt-4' style="opacity: 0.6;">No Results To Show</h4>{%endif%}
+{%for res in lists%}
+<div class="card text-dark" style="position: relative">
+  <div class="card-body">
+    <h3 class="card-title">Quiz: {{res.quiz}}</h3>
+    <div class="quiz-options text-light">
+      <p>A | {{res.quiz.option_1}}</p>
+      <p>B | {{res.quiz.option_2}}</p>
+      <p>C | {{res.quiz.option_3}}</p>
+      <p>D | {{res.quiz.option_4}}</p>
+    </div>
+    <div class="quiz-answers">
+      <p class="card-text">
+        Correct Answer: {%if res.quiz.answer == "option_1"%}
+        {{res.quiz.option_1}} {%elif res.quiz.answer == "option_2"%}
+        {{res.quiz.option_2}} {%elif res.quiz.answer == "option_3"%}
+        {{res.quiz.option_3}} {%elif res.quiz.answer == "option_4"%}
+        {{res.quiz.option_4}} {%endif%}
+      </p>
+      <p class="card-text">
+        Your Answer: {%if res.answer.answer == "option_1"%}
+        {{res.quiz.option_1}} {%elif res.answer.answer == "option_2"%}
+        {{res.quiz.option_2}} {%elif res.answer.answer == "option_3"%}
+        {{res.quiz.option_3}} {%elif res.answer.answer == "option_4"%}
+        {{res.quiz.option_4}} {%endif%}
+      </p>
+    </div>
+    <div class="quiz-status">
+      {%if res.answer.answer == res.quiz.answer%}
+      <i class="fa-solid fa-circle-check text-success fa-2x ml-auto"></i>
+      {%else%}
+      <i class="fa-solid fa-circle-xmark text-danger fa-2x ml-auto"></i>
+      {%endif%}
+    </div>
+  </div>
+</div>
+{%endfor%} {% endblock %}

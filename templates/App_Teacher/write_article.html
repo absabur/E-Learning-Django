@@ -1,0 +1,12 @@
+{% extends "base.html" %} {%load crispy_forms_tags%} {% block title_block %}Edit
+article{% endblock title_block %} {% block body_block %}
+<h1>Edit article</h1>
+<form method="POST" enctype="multipart/form-data" class="write-article">
+  {% csrf_token %}
+  <label style="bottom: 40px; left: 60px;" class="image-upload" for="id_image"
+    ><i class="fa-solid fa-image fa-2x"></i
+  ></label>
+  {{ form|crispy }}
+  <input type="submit" value="Update" class="btn btn-success w-100" />
+</form>
+{% endblock body_block %}
