@@ -65,6 +65,10 @@ def userInfo(request):
 
 @login_required
 def changeInfo(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     user = User.objects.get(pk=pk)
     info = user.user_profile
     form = UserInfoChangeForm(instance=info)

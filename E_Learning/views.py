@@ -1,7 +1,8 @@
 from django.shortcuts import HttpResponseRedirect, render
 from django.urls import reverse
-from django.http import HttpResponse
 from App_Auth.models import *
+from django.contrib import messages
+
 
 # View for the home page
 def home(request):
@@ -9,6 +10,7 @@ def home(request):
         return HttpResponseRedirect(reverse('App_Auth:login'))
     userinfo = UserProfile.objects.filter(user=request.user)
     if not userinfo:
+        messages.warning(request,"Add your information!")
         return HttpResponseRedirect(reverse('App_Auth:userInfo'))
     return HttpResponseRedirect(reverse('App_Teacher:articles'))
 

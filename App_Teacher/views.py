@@ -244,10 +244,6 @@ def reply_edit(request, pk):
 
 @login_required
 def reply_delete(request, pk):
-    userinfo = UserProfile.objects.filter(user=request.user)
-    if not userinfo:
-        messages.warning(request,"Add your information first!")
-        return redirect('App_Auth:userInfo')
     comment = Replay.objects.get(pk=pk, user=request.user)
     comment.delete()
     messages.warning(request,"Reply Deleted!")
