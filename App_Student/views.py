@@ -4,6 +4,7 @@ from django.contrib import messages
 
 from App_Student.forms import *
 from App_Teacher.forms import *
+from App_Auth.models import UserProfile
 
 from django.utils import timezone
 from datetime import datetime
@@ -11,6 +12,10 @@ from datetime import datetime
 # Create your views here.
 @login_required
 def questions(request):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     questionForm = QuestionFrom()
     answerForm = QuestionAnswerForm()
     if request.method == 'POST':
@@ -41,6 +46,10 @@ def questions(request):
 
 @login_required
 def question_edit(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     title = "Question"
     question = Question.objects.get(pk=pk, user=request.user)
     form = QuestionFrom(instance=question)
@@ -54,6 +63,10 @@ def question_edit(request, pk):
 
 @login_required
 def question_delete(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     question = Question.objects.get(pk=pk, user=request.user)
     question.delete()
     messages.warning(request,"Question Deleted!")
@@ -61,6 +74,10 @@ def question_delete(request, pk):
 
 @login_required
 def answer_edit(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     title = "Answer"
     answre = Answer.objects.get(pk=pk, user=request.user)
     form = AnswerForm(instance=answre)
@@ -74,6 +91,10 @@ def answer_edit(request, pk):
 
 @login_required
 def answer_delete(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     answer = Answer.objects.get(pk=pk, user=request.user)
     answer.delete()
     messages.warning(request,"Answer Deleted!")
@@ -82,6 +103,10 @@ def answer_delete(request, pk):
 
 @login_required
 def quiz_results(request):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     lists = []
     result_teacher = []
     if request.user.user_profile.role == 'teacher':

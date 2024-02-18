@@ -2,12 +2,17 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from App_Teacher.forms import *
+from App_Auth.models import UserProfile
 
 from django.utils import timezone
 from datetime import datetime
 # Create your views here.
 @login_required
 def artcle_write(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     if not request.user.user_profile.role == 'teacher':
         messages.warning(request,"Only Teacher Can Access This Page!")
         return redirect('home')
@@ -25,6 +30,10 @@ def artcle_write(request, pk):
 
 @login_required
 def delete_aritcle(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     if not request.user.user_profile.role == 'teacher':
         messages.warning(request,"Only Teacher Can Access This Page!")
         return redirect('home')
@@ -35,6 +44,10 @@ def delete_aritcle(request, pk):
 
 @login_required
 def articles(request):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     articles = Article.objects.all()
     commentForm = CommentForm()
     replayForm = replayFrom()
@@ -81,6 +94,10 @@ def articles(request):
 
 @login_required
 def liked_article(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     article = Article.objects.get(pk=pk)
     is_liked = Likes.objects.filter(user=request.user, article=article)
     if is_liked.exists():
@@ -94,6 +111,10 @@ def liked_article(request, pk):
 
 @login_required
 def quiz(request):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     quizzes = Quiz.objects.all()
     filtered_quiz = []
     if request.user.user_profile.role == 'teacher':
@@ -143,6 +164,10 @@ def quiz(request):
 
 @login_required
 def quiz_edit(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     if not request.user.user_profile.role == 'teacher':
         messages.warning(request,"Only Teacher Can Access This Page!")
         return redirect('home')
@@ -159,6 +184,10 @@ def quiz_edit(request, pk):
 
 @login_required
 def quiz_delete(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     if not request.user.user_profile.role == 'teacher':
         messages.warning(request,"Only Teacher Can Access This Page!")
         return redirect('home')
@@ -170,6 +199,10 @@ def quiz_delete(request, pk):
 
 @login_required
 def comment_edit(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     title = "Comment"
     comment = Comment.objects.get(pk=pk, user=request.user)
     form = CommentForm(instance=comment)
@@ -183,6 +216,10 @@ def comment_edit(request, pk):
 
 @login_required
 def comment_delete(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     comment = Comment.objects.get(pk=pk, user=request.user)
     comment.delete()
     messages.warning(request,"Comment Deleted!")
@@ -190,6 +227,10 @@ def comment_delete(request, pk):
 
 @login_required
 def reply_edit(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     title = "Comment"
     comment = Replay.objects.get(pk=pk, user=request.user)
     form = replayFrom(instance=comment)
@@ -203,6 +244,10 @@ def reply_edit(request, pk):
 
 @login_required
 def reply_delete(request, pk):
+    userinfo = UserProfile.objects.filter(user=request.user)
+    if not userinfo:
+        messages.warning(request,"Add your information first!")
+        return redirect('App_Auth:userInfo')
     comment = Replay.objects.get(pk=pk, user=request.user)
     comment.delete()
     messages.warning(request,"Reply Deleted!")
