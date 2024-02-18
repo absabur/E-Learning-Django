@@ -86,14 +86,12 @@
                 >
                   Profile
                 </a>
-                {%if user.user_profile.role == 'student'%}
                 <a
                   class="dropdown-item"
                   href="{%url 'App_Student:quiz_results'%}"
                 >
                   Quiz Results
                 </a>
-                {%endif%}
                 <a class="dropdown-item" href="{%url 'App_Auth:logout'%}">
                   Logout
                 </a>

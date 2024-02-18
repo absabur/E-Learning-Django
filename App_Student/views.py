@@ -82,11 +82,19 @@ def answer_delete(request, pk):
 
 @login_required
 def quiz_results(request):
-    answers = AnswerList.objects.filter(user=request.user)
     lists = []
-    for answer in answers:
-        quiz = Quiz.objects.get(id=answer.quiz.id)
-        date_time_end = datetime.strptime(str(quiz.end_on), '%Y-%m-%d %H:%M:%S%z')
-        if date_time_end < timezone.now():
-            lists.append({"quiz": quiz, "answer": answer})
-    return render(request, 'App_Student/quiz_results.html', context={"lists": lists})
+    result_teacher = []
+    if request.user.user_profile.role == 'teacher':
+        answers_teacher = AnswerList.objects.all()
+        for answer in answers_teacher:
+            quiz = Quiz.objects.get(id=answer.quiz.id)
+            result_teacher.append({"quiz": quiz, "answer": answer})
+    else:
+        answers = AnswerList.objects.filter(user=request.user)
+        for answer in answers:
+            quiz = Quiz.objects.get(id=answer.quiz.id)
+            date_time_end = datetime.strptime(str(quiz.end_on), '%Y-%m-%d %H:%M:%S%z')
+            if date_time_end < timezone.now():
+                lists.append({"quiz": quiz, "answer": answer})
+    
+    return render(request, 'App_Student/quiz_results.html', context={"lists": lists, "result_teacher": result_teacher})
